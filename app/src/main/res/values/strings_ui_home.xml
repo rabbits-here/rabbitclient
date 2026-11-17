@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="rabbit_greeting">Your Minecraft, your style</string>
+    <string name="rabbit_hero_eyebrow">RABBIT CLIENT • BEDROCK</string>
+    <string name="rabbit_hero_subtitle">A focused launcher for the worlds, packs and modules you actually use.</string>
+    <string name="rabbit_selected_build">Installed Minecraft version</string>
+    <string name="rabbit_launch_now">Launch Minecraft</string>
+    <string name="rabbit_profile_title">Player profile</string>
+    <string name="rabbit_profile_subtitle">Sign in with Microsoft to sync your Minecraft identity.</string>
+    <string name="rabbit_profile_action">Manage</string>
+    <string name="rabbit_modules_title">Rabbit Modules</string>
+    <string name="rabbit_tools_title">Your Minecraft toolkit</string>
+    <string name="home_manage">Manage</string>
+    <string name="home_view_all">View all</string>
+    <string name="home_mods_empty">No mods installed yet</string>
+    <string name="home_mods_none_enabled">No mods enabled</string>
+    <string name="home_content_download">Content download</string>
+    <string name="home_launch_options">More launch options</string>
+</resources>
