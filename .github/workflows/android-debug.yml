@@ -1,0 +1,62 @@
+name: Android Debug Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  debug-build:
+    name: Test and build Rabbit Client debug APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools platforms;android-36 build-tools;35.0.0 cmake;3.22.1 ndk;28.2.13676358'
+
+      - name: Make Gradle executable
+        run: chmod +x ./gradlew
+
+      - name: Provide CI-only Google Services configuration
+        run: |
+          cat > app/google-services.json <<'JSON'
+          {"project_info":{"project_number":"000000000000","project_id":"rabbit-client-ci","storage_bucket":"rabbit-client-ci.appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:000000000000:android:android0000000000000000000000","android_client_info":{"package_name":"org.rabbit.client"}},"oauth_client":[],"api_key":[{"current_key":"AIzaSyCIOnlyPlaceholderKey"}],"services":{"appinvite_service":{"other_platform_oauth_client":[]}}}],"configuration_version":"1"}
+          JSON
+
+      - name: Run unit tests and assemble debug APK
+        env:
+          JAVA_HOME: ${{ env.JAVA_HOME_21_X64 }}
+        run: ./gradlew :app:testDebugUnitTest :app:assembleDebug --no-daemon -x uploadCrashlyticsMappingFileDebug
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: rabbit-client-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload unit-test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rabbit-client-test-reports
+          path: app/build/test-results/testDebugUnitTest/
+          if-no-files-found: warn
+          retention-days: 14
