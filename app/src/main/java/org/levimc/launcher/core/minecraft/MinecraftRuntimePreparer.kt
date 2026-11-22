@@ -213,26 +213,29 @@ object MinecraftRuntimePreparer {
         val versionCode = intent.getStringExtra("MINECRAFT_VERSION") ?: ""
         val versionDirName = intent.getStringExtra("MINECRAFT_VERSION_DIR") ?: ""
         val isInstalled = intent.getBooleanExtra("IS_INSTALLED", false)
+        val packageName = intent.getStringExtra(MinecraftLauncher.EXTRA_GAME_PACKAGE_NAME)
+            ?.takeIf { it.isNotBlank() }
+            ?: MinecraftLauncher.MC_PACKAGE_NAME
 
         return if (!versionDir.isNullOrEmpty()) {
             GameVersion(
                 versionDirName,
                 versionCode,
-                versionCode,
-                File(versionDir),
-                isInstalled,
-                MinecraftLauncher.MC_PACKAGE_NAME,
-                ""
+                    versionCode,
+                    File(versionDir),
+                    isInstalled,
+                    packageName,
+                    ""
             )
         } else if (versionCode.isNotEmpty()) {
             GameVersion(
                 versionDirName,
                 versionCode,
                 versionCode,
-                null,
-                isInstalled,
-                MinecraftLauncher.MC_PACKAGE_NAME,
-                ""
+                    null,
+                    isInstalled,
+                    packageName,
+                    ""
             )
         } else {
             null

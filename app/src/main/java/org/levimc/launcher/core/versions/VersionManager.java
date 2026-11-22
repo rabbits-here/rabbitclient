@@ -2,10 +2,13 @@ package org.levimc.launcher.core.versions;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -363,6 +366,31 @@ public class VersionManager {
             }
         } catch (RuntimeException ignored) {
             // A restricted package list should not crash the launcher.
+        }
+
+        // Android 11+ package visibility may hide a repackaged package from
+        // getInstalledPackages(). A launcher activity is a supported visible
+        // discovery path and does not require QUERY_ALL_PACKAGES.
+        try {
+            Intent launcherQuery = new Intent(Intent.ACTION_MAIN);
+            launcherQuery.addCategory(Intent.CATEGORY_LAUNCHER);
+            List<ResolveInfo> activities = pm.queryIntentActivities(launcherQuery, 0);
+            if (activities != null) {
+                for (ResolveInfo resolveInfo : activities) {
+                    ActivityInfo activityInfo = resolveInfo.activityInfo;
+                    if (activityInfo == null || activityInfo.applicationInfo == null) continue;
+                    String packageName = activityInfo.packageName;
+                    if (!isMinecraftPackageName(packageName)) continue;
+                    try {
+                        PackageInfo candidate = pm.getPackageInfo(packageName, PackageManager.GET_META_DATA);
+                        if (isUsableMinecraftPackage(candidate)) return candidate;
+                    } catch (PackageManager.NameNotFoundException ignored) {
+                        // Visibility can change between the two package queries.
+                    }
+                }
+            }
+        } catch (RuntimeException ignored) {
+            // Some vendor package managers reject launcher activity enumeration.
         }
         return null;
     }

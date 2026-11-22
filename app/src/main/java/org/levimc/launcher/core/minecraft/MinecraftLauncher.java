@@ -22,6 +22,7 @@ public class MinecraftLauncher {
     public static final String MC_PACKAGE_NAME = "com.mojang.minecraftpe";
     public static final String EXTRA_MOD_MENU_ENABLED = "org.levimc.launcher.extra.MOD_MENU_ENABLED";
     public static final String EXTRA_GAME_VERSION = "org.levimc.launcher.extra.GAME_VERSION";
+    public static final String EXTRA_GAME_PACKAGE_NAME = "org.levimc.launcher.extra.GAME_PACKAGE_NAME";
     public static final String EXTRA_STORAGE_PROFILE_ID = "org.levimc.launcher.extra.STORAGE_PROFILE_ID";
     public static final String EXTRA_STORAGE_FILES_DIR = "org.levimc.launcher.extra.STORAGE_FILES_DIR";
     public static final String EXTRA_STORAGE_EXTERNAL_FILES_DIR = "org.levimc.launcher.extra.STORAGE_EXTERNAL_FILES_DIR";
@@ -201,6 +202,9 @@ public class MinecraftLauncher {
         fillIntentWithStoragePaths(launchIntent, version);
         launchIntent.setClass(context, MinecraftLoadingActivity.class);
         launchIntent.putExtra(EXTRA_GAME_VERSION, version);
+        launchIntent.putExtra(EXTRA_GAME_PACKAGE_NAME,
+                version.packageName == null || version.packageName.isEmpty()
+                        ? MC_PACKAGE_NAME : version.packageName);
         launchIntent.putExtra("MODS_ENABLED", modsEnabled);
         launchIntent.putExtra("MINECRAFT_VERSION", version.versionCode);
         launchIntent.putExtra("MINECRAFT_VERSION_DIR", version.directoryName);

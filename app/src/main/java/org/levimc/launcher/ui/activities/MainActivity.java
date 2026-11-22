@@ -123,6 +123,8 @@ import okhttp3.OkHttpClient;
     private OnBackPressedCallback onBackPressedCallback;
     private boolean launcherInitialized;
     private boolean postEulaFlowRunning;
+    private final ExecutorService detectionExecutor = Executors.newSingleThreadExecutor();
+    private boolean detectionRefreshInFlight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -686,13 +688,33 @@ import okhttp3.OkHttpClient;
             return;
         }
         if (versionManager != null) {
-            setTextMinecraftVersion();
-            viewModel.refreshMods();
-            refreshContentCounts();
+            refreshInstalledDetection();
         }
-        if (binding != null && versionManager != null) {
-            setLaunchEnabled(true);
-        }
+    }
+
+    /**
+     * Re-scan package metadata whenever Rabbit becomes visible. This catches installs, updates,
+     * disables and uninstalls without importing, replacing or modifying Minecraft data.
+     */
+    private void refreshInstalledDetection() {
+        if (versionManager == null || detectionRefreshInFlight || isFinishing() || isDestroyed()) return;
+        detectionRefreshInFlight = true;
+        setLaunchEnabled(false);
+        detectionExecutor.execute(() -> {
+            try {
+                versionManager.reload();
+            } finally {
+                runOnUiThread(() -> {
+                    detectionRefreshInFlight = false;
+                    if (isFinishing() || isDestroyed() || binding == null) return;
+                    setTextMinecraftVersion();
+                    updateViewModelVersion();
+                    if (viewModel != null) viewModel.refreshMods();
+                    refreshContentCounts();
+                    setLaunchEnabled(true);
+                });
+            }
+        });
     }
 
     @Override
