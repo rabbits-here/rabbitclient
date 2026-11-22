@@ -13,6 +13,8 @@ public class FeatureSettings {
     private String discordRpcClientId = "";
     private String discordRpcDetails = "Playing Minecraft Bedrock";
     private String discordRpcState = "Rabbit Client";
+    private boolean bedrockVoiceChatEnabled = false;
+    private String bedrockVoiceChatServer = "";
     /** Package mirror mode: "on" or "off"; null means auto (region detection). */
     private String pkgMirrorMode;
     /** Whether packages' hook scripts run; null means true. */
@@ -26,18 +28,14 @@ public class FeatureSettings {
         VERSION_ISOLATION_EXTERNAL
     }
 
-    public static void init(Context context) {
-        appContext = context.getApplicationContext();
-    }
+    public static void init(Context context) { appContext = context.getApplicationContext(); }
 
     public static FeatureSettings getInstance() {
         if (INSTANCE == null) {
             synchronized (FeatureSettings.class) {
                 if (INSTANCE == null) {
                     INSTANCE = SettingsStorage.load(appContext);
-                    if (INSTANCE == null) {
-                        INSTANCE = new FeatureSettings();
-                    }
+                    if (INSTANCE == null) INSTANCE = new FeatureSettings();
                 }
             }
         }
@@ -46,37 +44,30 @@ public class FeatureSettings {
 
     public boolean isVersionIsolationEnabled() { return versionIsolationEnabled; }
     public void setVersionIsolationEnabled(boolean enabled) { this.versionIsolationEnabled = enabled; autoSave(); }
-
     public boolean isLauncherManagedMcLoginEnabled() { return launcherManagedMcLoginEnabled; }
     public void setLauncherManagedMcLoginEnabled(boolean enabled) { this.launcherManagedMcLoginEnabled = enabled; autoSave(); }
-
     public boolean isLogcatOverlayEnabled() { return logcatOverlayEnabled; }
     public void setLogcatOverlayEnabled(boolean enabled) { this.logcatOverlayEnabled = enabled; autoSave(); }
-
     public boolean isCrashUploadEnabled() { return crashUploadEnabled == null || crashUploadEnabled; }
     public void setCrashUploadEnabled(boolean enabled) { this.crashUploadEnabled = enabled; autoSave(); }
-
     public boolean isDiscordRpcEnabled() { return discordRpcEnabled; }
     public void setDiscordRpcEnabled(boolean enabled) { this.discordRpcEnabled = enabled; autoSave(); }
-
     public String getDiscordRpcClientId() { return discordRpcClientId == null ? "" : discordRpcClientId; }
     public void setDiscordRpcClientId(String clientId) { this.discordRpcClientId = clientId == null ? "" : clientId.trim(); autoSave(); }
-
     public String getDiscordRpcDetails() { return discordRpcDetails == null ? "" : discordRpcDetails; }
     public void setDiscordRpcDetails(String details) { this.discordRpcDetails = details == null ? "" : details.trim(); autoSave(); }
-
     public String getDiscordRpcState() { return discordRpcState == null ? "" : discordRpcState; }
     public void setDiscordRpcState(String state) { this.discordRpcState = state == null ? "" : state.trim(); autoSave(); }
-
+    public boolean isBedrockVoiceChatEnabled() { return bedrockVoiceChatEnabled; }
+    public void setBedrockVoiceChatEnabled(boolean enabled) { this.bedrockVoiceChatEnabled = enabled; autoSave(); }
+    public String getBedrockVoiceChatServer() { return bedrockVoiceChatServer == null ? "" : bedrockVoiceChatServer; }
+    public void setBedrockVoiceChatServer(String server) { this.bedrockVoiceChatServer = server == null ? "" : server.trim(); autoSave(); }
     public String getPkgMirrorMode() { return pkgMirrorMode; }
     public void setPkgMirrorMode(String mode) { this.pkgMirrorMode = mode; autoSave(); }
-
     public boolean isPkgRunScripts() { return pkgRunScripts == null || pkgRunScripts; }
     public void setPkgRunScripts(boolean enabled) { this.pkgRunScripts = enabled; autoSave(); }
 
     private void autoSave() {
-        if (appContext != null) {
-            SettingsStorage.save(appContext, this);
-        }
+        if (appContext != null) SettingsStorage.save(appContext, this);
     }
 }

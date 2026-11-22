@@ -740,6 +740,15 @@
     <string name="discord_rich_presence">Discord Rich Presence</string>
     <string name="discord_rich_presence_status">In Development</string>
     <string name="discord_rich_presence_desc">Android Rich Presence is supported by Discord Social SDK, but this build still needs Discord’s SDK package, a registered Application ID, and the required mobile setup. Tap the card to open the official integration guide; no fake RPC toggle is exposed.</string>
+    <string name="bedrock_voice_chat_title">Bedrock Voice Chat</string>
+    <string name="bedrock_voice_chat_desc">Uses the official BVC companion with a compatible server addon and voice server. Rabbit does not bundle audio transport.</string>
+    <string name="bedrock_voice_chat_server">BVC server: not configured</string>
+    <string name="bedrock_voice_chat_open">Open official BVC companion / setup</string>
+    <string name="bedrock_voice_chat_server_title">BVC server endpoint</string>
+    <string name="bedrock_voice_chat_save">Save endpoint</string>
+    <string name="bedrock_voice_chat_not_installed">The official Bedrock Voice Chat companion is not installed. Opening setup instructions.</string>
+    <string name="bedrock_voice_chat_opened">Opened Bedrock Voice Chat companion.</string>
+
     <string name="discord_rpc_settings_title">Discord Rich Presence</string>
     <string name="discord_rpc_settings_desc">Configure RPC values for the official Social SDK. RPC stays inactive until the SDK and application credentials are installed.</string>
     <string name="discord_rpc_client_id">Application ID: not configured</string>

@@ -41,6 +41,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import org.levimc.launcher.R;
 import org.levimc.launcher.core.crash.CrashReporter;
+import org.levimc.launcher.integration.BedrockVoiceChatIntegration;
 import org.levimc.launcher.preloader.PreloaderSignatureRulesManager;
 import org.levimc.launcher.settings.FeatureSettings;
 import org.levimc.launcher.ui.animation.DynamicAnim;
@@ -557,6 +558,41 @@ public class SettingsActivity extends BaseActivity {
                 fs.getDiscordRpcDetails(), fs::setDiscordRpcDetails);
         bindDiscordRpcButton(R.id.discord_rpc_state, R.string.discord_rpc_edit_state,
                 fs.getDiscordRpcState(), fs::setDiscordRpcState);
+
+        SwitchMaterial switchBvc = findViewById(R.id.switch_bedrock_voice_chat);
+        switchBvc.setChecked(fs.isBedrockVoiceChatEnabled());
+        switchBvc.setOnCheckedChangeListener((btn, checked) -> fs.setBedrockVoiceChatEnabled(checked));
+        MaterialButton bvcServer = findViewById(R.id.bedrock_voice_chat_server);
+        updateBvcServerButton(bvcServer, fs.getBedrockVoiceChatServer());
+        bvcServer.setOnClickListener(v -> {
+            EditText input = new EditText(this, null, 0, R.style.Widget_Levi_Input);
+            input.setSingleLine(true);
+            input.setHint("https://voice.example.com");
+            input.setText(fs.getBedrockVoiceChatServer());
+            input.setSelection(input.length());
+            new CustomAlertDialog(this)
+                    .setTitleText(getString(R.string.bedrock_voice_chat_server_title))
+                    .setCustomView(input)
+                    .setNegativeButton(getString(R.string.cancel), null)
+                    .setPositiveButton(getString(R.string.bedrock_voice_chat_save), view -> {
+                        String value = input.getText().toString().trim();
+                        fs.setBedrockVoiceChatServer(value);
+                        updateBvcServerButton(bvcServer, value);
+                    }).show();
+        });
+        findViewById(R.id.bedrock_voice_chat_open).setOnClickListener(v -> {
+            if (BedrockVoiceChatIntegration.openCompanion(this)) {
+                Toast.makeText(this, R.string.bedrock_voice_chat_opened, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, R.string.bedrock_voice_chat_not_installed, Toast.LENGTH_LONG).show();
+                BedrockVoiceChatIntegration.openSetupPage(this);
+            }
+        });
+    }
+
+    private void updateBvcServerButton(MaterialButton button, String server) {
+        String value = server == null || server.isEmpty() ? "not configured" : server;
+        button.setText(getString(R.string.bedrock_voice_chat_server).replace("not configured", value));
     }
 
     private interface DiscordRpcValueWriter { void write(String value); }
